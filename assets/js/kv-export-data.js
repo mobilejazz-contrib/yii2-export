@@ -73,7 +73,7 @@
                 });
             }
         },
-        processExport: function(fmt) {
+        processExport: function (fmt) {
             var self = this, $selected, cols = [];
             self.$form.find('[name="export_type"]').val(fmt);
             if (self.target === '_popup') {
@@ -91,9 +91,9 @@
                 });
                 self.$form.find('input[name="export_columns"]').val(JSON.stringify(cols));
             }
-            self.$form.trigger('submit');  
+            self.$form.trigger('submit');
         },
-        listenClick: function() {
+        listenClick: function () {
             var self = this;
             self.$element.off('click.exportmenu').on('click.exportmenu', function (e) {
                 var fmt, msgs, msg = '', msg1, msg2, msg3, lib = window[self.dialogLib];
@@ -124,7 +124,7 @@
                     self.processExport(fmt);
                     return;
                 }
-                lib.confirm(msg, function(result) {
+                lib.confirm(msg, function (result) {
                     if (result) {
                         self.processExport(fmt);
                     }

@@ -27,6 +27,6 @@ use yii\helpers\Html;
     </button>
     <strong><?= Yii::t('kvexport', 'Exported File') ?>: </strong>
     <span class="h4" data-toggle="tooltip" title="<?= Yii::t('kvexport', 'Download exported file') ?>">
-        <?= Html::a("<i class='{$icon}'></i> {$file}", $href, ['class' => 'label label-success']) ?>
+        <?= Html::a("<i class='{$icon}'></i> {$file}", $href, [ 'class' => 'label label-success' ]) ?>
     </span>
 </div>

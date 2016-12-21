@@ -6,8 +6,8 @@
  * @version   1.2.7
  */
 
-use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 /**
  * @var array $options
