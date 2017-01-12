@@ -12,7 +12,6 @@ namespace kartik\export;
 use Closure;
 use kartik\base\TranslationTrait;
 use kartik\dialog\Dialog;
-use kartik\dynagrid\Dynagrid;
 use kartik\grid\GridView;
 use PHPExcel;
 use PHPExcel_IOFactory;
@@ -22,6 +21,8 @@ use PHPExcel_Worksheet;
 use PHPExcel_Writer_Abstract;
 use PHPExcel_Writer_CSV;
 use Yii;
+use yii\base\DynamicModel;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\bootstrap\ButtonDropdown;
@@ -1626,13 +1627,36 @@ class ExportMenu extends GridView
             else
             {
                 $format = $this->enableFormatter && isset($column->format) ? $column->format : 'raw';
-                $value  = ($column->content === null) ? (method_exists($column,
-                    'getDataCellValue') ? $this->formatter->format($column->getDataCellValue($model, $key, $index),
+
+                $method_exists   = false;
+                $data_cell_value = '';
+                try
+                {
+                    if (method_exists($column, 'getDataCellValue'))
+                    {
+                        $method_exists   = true;
+                        $data_cell_value = $column->getDataCellValue($model, $key, $index);
+                    }
+                }
+                catch (Exception $e)
+                {
+                    assert($e);
+                }
+                $value = ($column->content === null) ? ($method_exists ? $this->formatter->format($data_cell_value,
                     $format) : $column->renderDataCell($model, $key, $index)) : call_user_func($column->content, $model, $key, $index, $column);
             }
             if (empty($value) && !empty($column->attribute) && $column->attribute !== null)
             {
-                $value = ArrayHelper::getValue($model, $column->attribute, '');
+                $attribute = $column->attribute;
+                /** @var DynamicModel $model */
+                if (array_key_exists($attribute, $model->attributes))
+                {
+                    $value = ArrayHelper::getValue($model, $attribute, '');
+                }
+                else
+                {
+                    $value = '';
+                }
             }
             $this->_endCol++;
             $cell = $this->_objPHPExcelSheet->setCellValue(self::columnName($this->_endCol) . ($index + $this->_beginRow + 1),
@@ -1657,14 +1681,40 @@ class ExportMenu extends GridView
         $endCol = 0;
         foreach ($this->getVisibleColumns() as $column)
         {
+            $value_method_exists = false;
+            try
+            {
+                $value_method_exists = method_exists($column, 'getDataCellValue');
+            }
+            catch (Exception $e)
+            {
+                assert($e);
+            }
             /**
              * @var Column $column
              */
-            $value     = ($column->content === null) ? (method_exists($column,
-                'getDataCellValue') ? $this->formatter->format($column->getDataCellValue($model, $key, $index),
+            $value = ($column->content === null) ? ($value_method_exists ? $this->formatter->format($column->getDataCellValue($model, $key, $index),
                 'raw') : $column->renderDataCell($model, $key, $index)) : call_user_func($column->content, $model, $key, $index, $column);
-            $nextValue = ($column->content === null) ? (method_exists($column,
-                'getDataCellValue') ? $this->formatter->format($column->getDataCellValue($nextModel, $key, $index),
+
+            $next_value_method_exits    = false;
+            $next_value_data_cell_value = '';
+            try
+            {
+                if (method_exists($column, 'getDataCellValue'))
+                {
+                    $next_value_method_exits    = true;
+                    $next_value_data_cell_value = $column->getDataCellValue($nextModel, $key, $index);
+                }
+                else
+                {
+                    $next_value_data_cell_value = '';
+                }
+            }
+            catch (Exception $e)
+            {
+                assert($e);
+            }
+            $nextValue = ($column->content === null) ? ($next_value_method_exits ? $this->formatter->format($next_value_data_cell_value,
                 'raw') : $column->renderDataCell($nextModel, $key, $index)) : call_user_func($column->content, $nextModel, $key, $index, $column);
             if ((isset($this->_groupedColumn[ $endCol ])) && (!is_null($this->_groupedColumn[ $endCol ])))
             {
