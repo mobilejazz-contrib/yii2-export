@@ -27,7 +27,6 @@
     }
   ],
   "require": {
-    "kartik-v/yii2-dynagrid": "@dev",
     "kartik-v/yii2-dialog": "~1.0.0",
     "phpoffice/phpexcel": "~1.8.0"
   },

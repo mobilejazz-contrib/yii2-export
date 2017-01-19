@@ -475,17 +475,6 @@ class ExportMenu extends GridView
     public $i18n = [];
 
     /**
-     * @var bool enable dynagrid for column selection. If set to `true` the inbuilt export menu column selector
-     *     functionality will be disabled and not rendered.
-     */
-    public $dynagrid = false;
-
-    /**
-     * @var array dynagrid widget options
-     */
-    public $dynagridOptions = [ 'options' => [ 'id' => 'dyangrid-export-menu' ] ];
-
-    /**
      * @var array  the default style configuration
      */
     public $groupedRowStyle = [
@@ -668,16 +657,6 @@ class ExportMenu extends GridView
             $this->_exportType            = $_POST[ self::PARAM_EXPORT_TYPE ];
             $this->_columnSelectorEnabled = $_POST[ self::PARAM_COLSEL_FLAG ];
             $this->initSelectedColumns();
-        }
-        if ($this->dynagrid)
-        {
-            $this->_columnSelectorEnabled               = false;
-            $options                                    = $this->dynagridOptions;
-            $options[ 'columns' ]                       = $this->columns;
-            $options[ 'storage' ]                       = 'db';
-            $options[ 'gridOptions' ][ 'dataProvider' ] = $this->dataProvider;
-            $dynagrid                                   = new DynaGrid($options);
-            $this->columns                              = $dynagrid->getColumns();
         }
         parent::init();
     }
