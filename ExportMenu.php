@@ -1670,10 +1670,28 @@ class ExportMenu extends GridView
                 assert($e);
             }
             /**
-             * @var Column $column
+             * @var DataColumn $column
              */
-            $value = ($column->content === null) ? ($value_method_exists ? $this->formatter->format($column->getDataCellValue($model, $key, $index),
-                'raw') : $column->renderDataCell($model, $key, $index)) : call_user_func($column->content, $model, $key, $index, $column);
+            $value = null;
+
+            if ($column->content === null && isset($model->{$column->attribute}))
+            {
+                if ($value_method_exists)
+                {
+                    /**
+                     * @var DataColumn $column
+                     */
+                    $value = $this->formatter->format($column->getDataCellValue($model, $key, $index), 'raw');
+                }
+                else
+                {
+                    $value = $column->renderDataCell($model, $key, $index);
+                }
+            }
+            else
+            {
+                $value = call_user_func($column->content, $model, $key, $index, $column);
+            }
 
             $next_value_method_exits    = false;
             $next_value_data_cell_value = '';
